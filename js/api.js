@@ -1,5 +1,5 @@
 class APIClient {
-    constructor(baseURL = 'http://127.0.0.1:8000') {
+    constructor(baseURL = 'https://quiet-eyes-watch.loca.lt') {
         this.baseURL = baseURL;
     }
 
