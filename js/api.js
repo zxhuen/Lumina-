@@ -1,5 +1,5 @@
 class APIClient {
-    constructor(baseURL = 'https://quiet-eyes-watch.loca.lt') {
+    constructor(baseURL = 'https://fastapi-rag-engine-gsxz.onrender.com') {
         this.baseURL = baseURL;
     }
 
