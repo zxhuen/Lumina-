@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant | Academic OS</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Lumina
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="subjects.html" class="nav-link">Subjects</a></li>
+                    <li><a href="upload.html" class="nav-link">Upload</a></li>
+                    <li><a href="chat.html" class="nav-link active">AI Assistant</a></li>
+                </ul>
+            </nav>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="icon-btn" onclick="themeManager.toggle()"></button>
+            </div>
+        </div>
+    </header>
+
+    <main style="max-width: 900px;">
+        <div class="chat-window">
+            <!-- Chat Header Context Selector -->
+            <div style="padding: var(--space-xs) var(--space-md); border-bottom: 1px solid var(--border-color); background-color: var(--bg-tertiary); display: flex; align-items: center; justify-content: space-between;">
+                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">
+                    RAG Context:
+                </div>
+                <select id="chat-subject-select" class="form-select" style="width: auto; padding: 6px 14px; font-size: 0.85rem; border-radius: var(--radius-full);">
+          <option value="">🌐 All Subjects (Global RAG Search)</option>
+          <option value="1f49c4ab-a89e-4d6f-bc54-ff9c4096e8cc">Enterprise Architecture</option>
+          <option value="29bb62ce-69bd-49fa-8e8f-d127b733266a">Data and Digital Communications</option>
+          <option value="512bd93e-7a8c-4eac-9161-856cd96cfa20">Advanced Database Systems</option>
+          <option value="51a6d596-47fb-467e-8a53-110c73402d6b">Advanced Systems Integration and Architecture</option>
+          <option value="58c623a6-e0df-4fd4-b6e2-005dadacc0cd">Event-Driven Programming</option>
+          <option value="8133f233-337e-40bf-97fb-8a23c7929d31">Application Development and Emerging Technologies</option>
+          <option value="a19acc22-d212-4c21-82b5-70d3753a198c">Professional Issues in Information Systems and Technology</option>
+        </select>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="chat-messages" class="chat-messages">
+                <div class="chat-bubble bot">
+                    Hi there! I'm Lumina, Zhike Esguerra's learning assistant. I'm here to support your learning and answer any questions you have. What can I help you with today?
+
+                </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" class="form-input" placeholder="Ask a question about your subject..." style="border-radius: var(--radius-full);">
+                <button id="send-btn" class="btn btn-primary" style="padding: 12px 20px; border-radius: var(--radius-full);">
+          Send
+        </button>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/theme.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/chat.js"></script>
+</body>
+
+</html>

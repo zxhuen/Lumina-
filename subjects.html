@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subjects | Academic OS</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Lumina
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="subjects.html" class="nav-link active">Subjects</a></li>
+                    <li><a href="upload.html" class="nav-link">Upload</a></li>
+                    <li><a href="chat.html" class="nav-link">AI Assistant</a></li>
+                </ul>
+            </nav>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="icon-btn" onclick="themeManager.toggle()"></button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-xl);" class="reveal">
+            <div>
+                <h1>Subjects</h1>
+                <p class="subtitle">Organize and define academic courses.</p>
+            </div>
+            <button class="btn btn-primary" onclick="openSubjectModal()">+ Add Subject</button>
+        </div>
+
+        <!-- Grid Container -->
+        <div id="subjects-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: var(--space-md);">
+            <!-- Skeleton Loaders -->
+            <div class="card skeleton" style="height: 140px;"></div>
+            <div class="card skeleton" style="height: 140px;"></div>
+            <div class="card skeleton" style="height: 140px;"></div>
+        </div>
+    </main>
+
+    <script src="js/theme.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/subjects.js"></script>
+</body>
+
+</html>

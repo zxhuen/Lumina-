@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Document | Academic OS</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Lumina
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="subjects.html" class="nav-link">Subjects</a></li>
+                    <li><a href="upload.html" class="nav-link active">Upload</a></li>
+                    <li><a href="chat.html" class="nav-link">AI Assistant</a></li>
+                </ul>
+            </nav>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="icon-btn" onclick="themeManager.toggle()"></button>
+            </div>
+        </div>
+    </header>
+
+    <main style="max-width: 680px;">
+        <div class="reveal" style="margin-bottom: var(--space-xl);">
+            <h1>Upload Document</h1>
+            <p class="subtitle">Attach PDF resources to feed the assistant context.</p>
+        </div>
+
+        <form id="upload-form" class="card reveal" style="padding: var(--space-xl);">
+            <div class="form-group">
+                <label class="form-label" for="doc-title">Document Title</label>
+                <input type="text" id="doc-title" class="form-input" placeholder="e.g., Advanced Calculus Notes" required>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="doc-subject">Subject</label>
+                <select id="doc-subject" class="form-select" required>
+          <option value="">Select a Subject</option>
+          <option value="Mathematics">Mathematics</option>
+          <option value="Quantum Physics">Quantum Physics</option>
+          <option value="Computer Architecture">Computer Architecture</option>
+        </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="doc-desc">Description</label>
+                <textarea id="doc-desc" class="form-textarea" rows="3" placeholder="Brief outline of contents..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">PDF File</label>
+                <div id="drop-zone" class="drop-zone">
+                    <svg style="width: 40px; height: 40px; stroke: var(--text-secondary); fill: none; margin-bottom: 12px;" viewBox="0 0 24 24" stroke-width="1.5">
+            <path d="M12 15V3m0 0l-4 4m4-4l4 4M2 17l.621 2.485A2 2 0 004.561 21h14.878a2 2 0 001.94-1.515L22 17"/>
+          </svg>
+                    <p id="file-label" style="font-size: 0.95rem; color: var(--text-secondary);">
+                        Drag and drop your PDF here, or <span style="color: var(--accent-primary);">browse</span>
+                    </p>
+                    <input type="file" id="file-input" accept="application/pdf" style="display: none;" required>
+                </div>
+            </div>
+
+            <button type="submit" id="upload-btn" class="btn btn-primary" style="width: 100%; margin-top: var(--space-sm);">
+        Upload Document
+      </button>
+        </form>
+    </main>
+
+    <script src="js/theme.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/upload.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumina | chat with Lumina</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+</head>
+
+<body>
+    <div class="ambient-glow"></div>
+
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Lumina
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link active">Home</a></li>
+                    <li><a href="subjects.html" class="nav-link">Subjects</a></li>
+                    <li><a href="upload.html" class="nav-link">Upload</a></li>
+                    <li><a href="chat.html" class="nav-link">AI Assistant</a></li>
+                </ul>
+            </nav>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme" onclick="themeManager.toggle()"></button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section style="text-align: center; padding: 80px 0;" class="reveal">
+            <h1 style="margin-bottom: var(--space-sm);">Intelligence for your studies.</h1>
+            <p class="subtitle" style="margin: 0 auto var(--space-lg);">
+                A minimalistic space to organize subjects, contextualize documents, and converse with high-performance AI.
+            </p>
+            <div style="display: flex; gap: var(--space-sm); justify-content: center;">
+                <a href="chat.html" class="btn btn-primary">Start Chatting</a>
+                <a href="upload.html" class="btn btn-secondary">Upload PDF</a>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section class="stagger-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-md); margin-top: var(--space-3xl);">
+            <div class="card card-hover">
+                <h3 style="margin-bottom: var(--space-xs);">Subject Hub</h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Categorize your academic tracks by semesters and term metrics seamlessly.</p>
+            </div>
+            <div class="card card-hover">
+                <h3 style="margin-bottom: var(--space-xs);">Document Parsing</h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Directly feed target PDF resources into your intelligence backend.</p>
+            </div>
+            <div class="card card-hover">
+                <h3 style="margin-bottom: var(--space-xs);">Targeted Context Chat</h3>
+                <p style="color: var(--text-secondary); font-size: 0.95rem;">Engage in conversational query dynamics backed by FastAPI integrations.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 Lumina. Built with precision.</p>
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/animations.js"></script>
+</body>
+
+</html>
