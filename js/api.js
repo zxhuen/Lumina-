@@ -1,5 +1,5 @@
 class APIClient {
-    constructor(baseURL = 'https://fastapi-rag-engine-gsxz.onrender.com') {
+    constructor(baseURL = 'http://127.0.0.1:8000') {
         this.baseURL = baseURL;
     }
 
