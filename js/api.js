@@ -71,6 +71,48 @@ class APIClient {
             throw err;
         }
     }
+
+    async generateFlashcards(title, file) {
+        const formData = new FormData();
+        formData.append("title", title);
+        formData.append("file", file);
+
+        try {
+            const response = await authFetch(
+                `${this.baseURL}/flashcards/generate`, {
+                    method: "POST",
+                    body: formData // Let fetch manage boundary headers
+                }
+            );
+
+            if (!response || !response.ok) {
+                throw new Error("Failed to generate flashcards");
+            }
+            return await response.json();
+        } catch (err) {
+            console.error(err);
+            if (typeof toast !== "undefined") {
+                toast.show(err.message, "error");
+            }
+            throw err;
+        }
+    }
+
+    async listFlashcards() {
+        try {
+            const response = await authFetch(
+                `${this.baseURL}/flashcards/list-flashcards`, { method: "GET" }
+            );
+
+            if (!response || !response.ok) {
+                throw new Error("Failed to load flashcards");
+            }
+            return await response.json();
+        } catch (err) {
+            console.error("Error listing flashcards:", err);
+            throw err;
+        }
+    }
 }
 
 export const api = new APIClient();

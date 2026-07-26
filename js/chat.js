@@ -69,6 +69,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Configure marked to use highlight.js
+    // Marked.js (v5+) syntax extension setup for Highlight.js
+    if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
+        marked.use({
+            breaks: true,
+            gfm: true,
+            renderer: {
+                code(code, infostring) {
+                    const lang = (infostring || '').match(/\S*/)[0];
+                    let highlighted = code;
+
+                    if (lang && hljs.getLanguage(lang)) {
+                        try {
+                            highlighted = hljs.highlight(code, { language: lang }).value;
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    } else {
+                        highlighted = hljs.highlightAuto(code).value;
+                    }
+
+                    return `
+                    <div class="code-block-wrapper" style="position: relative; margin: 10px 0;">
+                        <button class="copy-code-btn" type="button" style="position: absolute; top: 8px; right: 8px; padding: 4px 8px; font-size: 0.75rem; background: rgba(255,255,255,0.15); border: none; border-radius: 4px; color: #fff; cursor: pointer;">Copy</button>
+                        <pre><code class="hljs ${lang}">${highlighted}</code></pre>
+                    </div>
+                `;
+                }
+            }
+        });
+    }
+
     function appendMessage(text, sender, contextLabel = null, chunkContext = null, imageFile = null) {
         const bubble = document.createElement('div');
         bubble.className = `chat-bubble ${sender}`;
@@ -96,7 +128,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const content = document.createElement('div');
-        content.innerText = text;
+        content.className = 'chat-content';
+
+        // Parse markdown for bot, plain text for user
+        if (sender === 'bot') {
+            content.innerHTML = typeof marked !== 'undefined' ? marked.parse(text) : text;
+
+            // Add interactive Copy listeners to generated code buttons
+            content.querySelectorAll('.copy-code-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const code = btn.nextElementSibling.querySelector('code').innerText;
+                    navigator.clipboard.writeText(code).then(() => {
+                        btn.innerText = 'Copied!';
+                        setTimeout(() => btn.innerText = 'Copy', 2000);
+                    });
+                });
+            });
+        } else {
+            content.innerText = text;
+        }
+
         bubble.appendChild(content);
 
         // Render RAG chunk context standard collapse if available

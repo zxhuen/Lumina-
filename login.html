@@ -189,7 +189,6 @@
                 }
             } = await supabaseClient.auth.getSession();
 
-            // ONLY redirect if the user IS logged in!
             if (session) {
                 console.log("Access Token:", session.access_token);
 
@@ -201,11 +200,16 @@
                         },
                     });
 
+                    console.log("URL:", response.url);
+                    console.log("Status:", response.status);
+                    console.log("Response text:", await response.text());
+
                     if (response.ok) {
                         console.log("Successfully authenticated with FastAPI backend!");
-                        window.location.href = "/project/index.html"; // Send to main app
+                        // Make sure index.html is relative to your local development server root
+                        window.location.href = "index.html";
                     } else {
-                        console.error("FastAPI rejected session");
+                        console.error("FastAPI rejected session. Status:", response.status);
                         await supabaseClient.auth.signOut();
                     }
                 } catch (err) {

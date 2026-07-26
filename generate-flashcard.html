@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generate Flashcards | Lumina</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <style>
+        /* Drag and Drop Label Zone */
+        
+        .drop-zone {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md, 12px);
+            padding: var(--space-xl);
+            text-align: center;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            transition: border-color var(--duration-fast), background-color var(--duration-fast);
+        }
+        
+        .drop-zone:hover,
+        .drop-zone.drag-over {
+            border-color: var(--accent-primary);
+            background: rgba(100, 108, 255, 0.05);
+        }
+        /* Generated Flashcard Set Cover Card */
+        
+        .set-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md, 16px);
+            padding: var(--space-xl);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform var(--duration-fast), border-color var(--duration-fast), box-shadow var(--duration-fast);
+        }
+        
+        .set-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .set-card-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            background: rgba(100, 108, 255, 0.12);
+            color: var(--accent-primary, #646cff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+        /* Study Modal Popup Styles */
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .modal-container {
+            width: 90%;
+            max-width: 650px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: var(--space-xl);
+            position: relative;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+        
+        .modal-close-btn {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-tertiary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        
+        .modal-close-btn:hover {
+            color: var(--text-primary);
+        }
+        /* Single Flip Card inside Modal */
+        
+        .modal-card-wrapper {
+            perspective: 1000px;
+            height: 280px;
+            cursor: pointer;
+            width: 100%;
+        }
+        
+        .modal-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        
+        .modal-card-wrapper.flipped .modal-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .modal-card-front,
+        .modal-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: var(--radius-md, 14px);
+            padding: var(--space-xl);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid var(--border-color);
+            background-color: var(--bg-primary);
+        }
+        
+        .modal-card-back {
+            transform: rotateY(180deg);
+            background-color: rgba(100, 108, 255, 0.08);
+            border-color: var(--accent-primary);
+        }
+        
+        .modal-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: var(--space-xs);
+        }
+        
+        .card-tag {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-tertiary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="ambient-glow"></div>
+
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Lumina
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="subjects.html" class="nav-link">Subjects</a></li>
+                    <li><a href="upload.html" class="nav-link">Upload</a></li>
+                    <li><a href="generate-flashcard.html" class="nav-link active">Flashcards</a></li>
+                    <li><a href="chat.html" class="nav-link">Lumina</a></li>
+                    <li><a href="profile.html" class="nav-link">Profile</a></li>
+                </ul>
+            </nav>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme" onclick="themeManager.toggle()"></button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Page Header -->
+        <div style="margin-bottom: var(--space-xl);" class="reveal">
+            <h1 style="font-size: 1.8rem; margin-bottom: 4px;">AI Flashcard Generator</h1>
+            <p class="subtitle" style="font-size: 0.95rem;">Upload a study document to automatically generate flashcards.</p>
+        </div>
+
+        <!-- Flashcard Generation Form -->
+        <div class="card reveal" style="padding: var(--space-lg); margin-bottom: var(--space-xl);">
+            <form id="flashcard-form" style="display: flex; flex-direction: column; gap: var(--space-md);">
+                <div>
+                    <label for="title" style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">Set Title</label>
+                    <input type="text" id="title" name="title" class="input-field" placeholder="e.g., Biology Chapter 4: Photosynthesis" required style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--bg-primary); color: var(--text-primary);">
+                </div>
+
+                <div>
+                    <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px;">Document File</label>
+
+                    <!-- Clickable Label Zone -->
+                    <label class="drop-zone" id="drop-zone" for="file">
+                        <svg viewBox="0 0 24 24" style="width: 36px; height: 36px; fill: var(--text-tertiary); margin-bottom: 8px;">
+                            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                        </svg>
+                        <span style="font-size: 0.9rem; color: var(--text-secondary);" id="file-label">
+                            Drag & drop your PDF/text file here or click to browse
+                        </span>
+                    </label>
+
+                    <input type="file" id="file" name="file" accept=".pdf,.txt,.docx" required style="opacity: 0; position: absolute; width: 0; height: 0; pointer-events: none;">
+                </div>
+
+                <button type="submit" id="submit-btn" class="btn btn-primary" style="align-self: flex-start; margin-top: var(--space-xs);">
+                    Generate Flashcards ⚡
+                </button>
+            </form>
+        </div>
+
+        <!-- User's Saved & Generated Flashcard Sets Container -->
+        <div id="results-container" class="reveal" style="display: none; margin-top: var(--space-xl);">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md);">
+                <h2 style="font-size: 1.2rem; font-weight: 600;">Your Flashcard Sets</h2>
+                <span id="set-count" style="font-size: 0.85rem; color: var(--text-tertiary);"></span>
+            </div>
+
+            <!-- Dynamic grid container where sets will be rendered -->
+            <div id="sets-grid" style="display: flex; flex-direction: column; gap: var(--space-md);"></div>
+        </div>
+    </main>
+
+    <!-- Modal Popup for Flashcard Study Session -->
+    <div id="study-modal" class="modal-overlay">
+        <div class="modal-container">
+            <button id="modal-close" class="modal-close-btn">&times;</button>
+
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <h3 id="modal-set-title" style="font-size: 1.1rem; font-weight: 600;"></h3>
+                <span id="modal-progress" style="font-size: 0.85rem; color: var(--text-tertiary); font-weight: 500;">Card 1 of 10</span>
+            </div>
+
+            <!-- Single Flip Flashcard -->
+            <div id="modal-card-wrapper" class="modal-card-wrapper">
+                <div class="modal-card-inner">
+                    <div class="modal-card-front">
+                        <span class="card-tag">Question / Front</span>
+                        <p id="modal-card-front-text" style="font-size: 1.1rem; font-weight: 500; text-align: center; line-height: 1.5;"></p>
+                    </div>
+                    <div class="modal-card-back">
+                        <span class="card-tag">Answer / Back</span>
+                        <p id="modal-card-back-text" style="font-size: 1rem; text-align: center; line-height: 1.5;"></p>
+                    </div>
+                </div>
+            </div>
+
+            <p style="text-align: center; font-size: 0.75rem; color: var(--text-tertiary);">Tip: Click card to flip • Use arrow keys to navigate</p>
+
+            <div class="modal-controls">
+                <button id="prev-card-btn" class="btn btn-secondary" style="font-size: 0.85rem;">← Previous</button>
+                <button id="next-card-btn" class="btn btn-primary" style="font-size: 0.85rem;">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-container">
+            <p>&copy; 2026 Lumina. Built by Zhike Esguerra.</p>
+        </div>
+    </footer>
+
+    <script src="js/theme.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/animations.js"></script>
+    <script type="module" src="js/flashcards.js"></script>
+</body>
+
+</html>
