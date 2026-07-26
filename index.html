@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lumina | chat with Lumina</title>
+    <title>Dashboard | Lumina</title>
     <link rel="stylesheet" href="css/variables.css">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
@@ -24,7 +24,8 @@
                     <li><a href="index.html" class="nav-link active">Home</a></li>
                     <li><a href="subjects.html" class="nav-link">Subjects</a></li>
                     <li><a href="upload.html" class="nav-link">Upload</a></li>
-                    <li><a href="chat.html" class="nav-link">AI Assistant</a></li>
+                    <li><a href="chat.html" class="nav-link">Lumina</a></li>
+                    <li><a href="profile.html" class="nav-link">Profile</a></li>
                 </ul>
             </nav>
             <div class="nav-controls">
@@ -34,44 +35,67 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
-        <section style="text-align: center; padding: 80px 0;" class="reveal">
-            <h1 style="margin-bottom: var(--space-sm);">Intelligence for your studies.</h1>
-            <p class="subtitle" style="margin: 0 auto var(--space-lg);">
-                A minimalistic space to organize subjects, contextualize documents, and converse with high-performance AI.
-            </p>
-            <div style="display: flex; gap: var(--space-sm); justify-content: center;">
-                <a href="chat.html" class="btn btn-primary">Start Chatting</a>
-                <a href="upload.html" class="btn btn-secondary">Upload PDF</a>
+        <!-- Header Welcome & Quick Search Trigger -->
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-xl);" class="reveal">
+            <div>
+                <h1 style="font-size: 1.8rem; margin-bottom: 4px;">Academic Workspace</h1>
+                <p class="subtitle" style="font-size: 0.95rem;">Select a subject to launch context-aware AI query sessions.</p>
             </div>
-        </section>
+            <div style="display: flex; gap: var(--space-xs);">
+                <a href="upload.html" class="btn btn-secondary" style="font-size: 0.85rem;">+ Add Document</a>
+                <a href="chat.html" class="btn btn-primary" style="font-size: 0.85rem;">Open Chat</a>
+            </div>
+        </div>
 
-        <!-- Features Section -->
-        <section class="stagger-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-md); margin-top: var(--space-3xl);">
-            <div class="card card-hover">
-                <h3 style="margin-bottom: var(--space-xs);">Subject Hub</h3>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Categorize your academic tracks by semesters and term metrics seamlessly.</p>
+        <!-- System Overview Metrics -->
+        <div class="reveal" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-md); margin-bottom: var(--space-xl);">
+            <!-- Card 1: Vector Database / RAG Index -->
+            <div class="card" style="padding: var(--space-md);">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 6px;">
+                    Knowledge Base
+                </div>
+                <div style="font-size: 1.25rem; font-weight: 600; color: #30d158; display: flex; align-items: center; gap: 8px;">
+                    <span style="width: 8px; height: 8px; border-radius: 50%; background: #30d158; display: inline-block;"></span>
+                    <span id="subject-count"></span> Subjects Available
+                </div>
             </div>
-            <div class="card card-hover">
-                <h3 style="margin-bottom: var(--space-xs);">Document Parsing</h3>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Directly feed target PDF resources into your intelligence backend.</p>
+
+            <!-- Card 2: Core Intelligence Engine -->
+            <div class="card" style="padding: var(--space-md);">
+                <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 6px;">
+                    AI Assistant
+                </div>
+                <div style="font-size: 1.25rem; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; gap: 8px;">
+                    <span style="color: var(--accent-primary);">⚡</span> Gemini 2.5 Flash
+                </div>
             </div>
-            <div class="card card-hover">
-                <h3 style="margin-bottom: var(--space-xs);">Targeted Context Chat</h3>
-                <p style="color: var(--text-secondary); font-size: 0.95rem;">Engage in conversational query dynamics backed by FastAPI integrations.</p>
+        </div>
+        <!-- Quick Subject Launch Grid -->
+        <div class="reveal">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-md);">
+                <h2 style="font-size: 1.2rem; font-weight: 600;">Active Course Tracks</h2>
+                <a href="subjects.html" style="font-size: 0.85rem; color: var(--accent-primary); text-decoration: none; font-weight: 500;">View All →</a>
             </div>
-        </section>
+
+            <div id="recent-subjects-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--space-md);">
+                <!-- Skeleton Loader -->
+                <div class="card skeleton" style="height: 100px;"></div>
+                <div class="card skeleton" style="height: 100px;"></div>
+                <div class="card skeleton" style="height: 100px;"></div>
+            </div>
+        </div>
     </main>
 
     <footer class="footer">
         <div class="footer-container">
-            <p>&copy; 2026 Lumina. Built with precision.</p>
+            <p>&copy; 2026 Lumina. Built by Zhike Esguerra.</p>
         </div>
     </footer>
 
     <script src="js/theme.js"></script>
-    <script src="js/toast.js"></script>
+    <script type="module" src="js/toast.js"></script>
     <script src="js/animations.js"></script>
+    <script type="module" src="js/dashboard.js"></script>
 </body>
 
 </html>

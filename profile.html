@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile | Academic OS</title>
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body>
+    <header class="header">
+        <div class="nav-container">
+            <a href="index.html" class="brand">
+                <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Lumina
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="nav-link">Home</a></li>
+                    <li><a href="subjects.html" class="nav-link">Subjects</a></li>
+                    <li><a href="upload.html" class="nav-link">Upload</a></li>
+                    <li><a href="chat.html" class="nav-link">Lumina</a></li>
+                    <li><a href="profile.html" class="nav-link active">Profile</a></li>
+                </ul>
+            </nav>
+            <div class="nav-controls">
+                <button id="theme-toggle" class="icon-btn" onclick="themeManager.toggle()"></button>
+            </div>
+        </div>
+    </header>
+
+    <main style="max-width: 600px;">
+        <div class="reveal" style="margin-bottom: var(--space-xl);">
+            <h1>Account Profile</h1>
+            <p class="subtitle">Manage your account details and subscription plan.</p>
+        </div>
+
+        <!-- Profile Card -->
+        <div class="card reveal" style="padding: var(--space-xl); margin-bottom: var(--space-lg);">
+            <div style="display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg);">
+                <!-- User Avatar -->
+                <div id="user-avatar-container" style="width: 72px; height: 72px; border-radius: 50%; overflow: hidden; background: var(--bg-tertiary); display: flex; align-items: center; justify-content: center; border: 2px solid var(--border-color); flex-shrink: 0;">
+                    <img id="user-avatar" src="" alt="Avatar" style="width: 100%; height: 100%; object-fit: cover; display: none;">
+                    <span id="user-avatar-placeholder" style="font-size: 1.5rem; font-weight: 600; color: var(--text-secondary);">--</span>
+                </div>
+
+                <!-- User Information -->
+                <div style="overflow: hidden;">
+                    <h2 id="user-name" style="font-size: 1.35rem; font-weight: 600; margin-bottom: 4px;">Loading...</h2>
+                    <p id="user-email" style="color: var(--text-secondary); font-size: 0.9rem;">loading@example.com</p>
+                </div>
+            </div>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: var(--space-lg);">
+
+            <!-- Subscription Section -->
+            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-tertiary); padding: var(--space-md) var(--space-lg); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <div>
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 4px;">
+                        Current Plan
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span id="user-plan" style="font-size: 1.1rem; font-weight: 700; color: var(--accent-primary);">FREE</span>
+                        <span style="font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; background: rgba(255, 255, 255, 0.1); color: var(--text-secondary);">Active</span>
+                    </div>
+                </div>
+                <button id="change-plan-btn" class="btn btn-secondary" style="font-size: 0.85rem; padding: 8px 16px;">
+                    Change Plan
+                </button>
+            </div>
+        </div>
+
+        <!-- Logout Trigger -->
+        <button id="logout-btn" class="btn btn-secondary" style="width: 100%; color: #ff453a; border-color: rgba(255, 69, 58, 0.2);">
+            Sign Out
+        </button>
+    </main>
+
+    <script src="js/theme.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/animations.js"></script>
+    <script type="module" src="js/profile.js"></script>
+</body>
+
+</html>

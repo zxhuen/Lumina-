@@ -22,7 +22,8 @@
                     <li><a href="index.html" class="nav-link">Home</a></li>
                     <li><a href="subjects.html" class="nav-link active">Subjects</a></li>
                     <li><a href="upload.html" class="nav-link">Upload</a></li>
-                    <li><a href="chat.html" class="nav-link">AI Assistant</a></li>
+                    <li><a href="chat.html" class="nav-link">Lumina</a></li>
+                    <li><a href="profile.html" class="nav-link">Profile</a></li>
                 </ul>
             </nav>
             <div class="nav-controls">
@@ -32,12 +33,14 @@
     </header>
 
     <main>
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: var(--space-xl);" class="reveal">
-            <div>
-                <h1>Subjects</h1>
-                <p class="subtitle">Organize and define academic courses.</p>
-            </div>
-            <button class="btn btn-primary" onclick="openSubjectModal()">+ Add Subject</button>
+        <div style="margin-bottom: var(--space-xl);" class="reveal">
+            <h1>Subjects</h1>
+            <p class="subtitle">Organize and define academic courses.</p>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="reveal" style="margin-bottom: var(--space-lg); max-width: 400px;">
+            <input type="text" id="subject-search" class="form-input" placeholder="Search subjects..." style="border-radius: var(--radius-full); padding: 10px 18px;">
         </div>
 
         <!-- Grid Container -->
@@ -48,12 +51,11 @@
             <div class="card skeleton" style="height: 140px;"></div>
         </div>
     </main>
-
     <script src="js/theme.js"></script>
     <script src="js/toast.js"></script>
-    <script src="js/api.js"></script>
+    <script type="module" src="js/api.js"></script>
     <script src="js/animations.js"></script>
-    <script src="js/subjects.js"></script>
+    <script type="module" src="js/subjects.js"></script>
 </body>
 
 </html>
