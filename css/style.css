@@ -278,3 +278,45 @@ p.subtitle {
     opacity: 1;
     background-color: rgba(255, 255, 255, 0.25) !important;
 }
+
+
+/* Styling AI Markdown Output */
+
+.chat-bubble.bot .chat-content {
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+
+/* Format Headings */
+
+.chat-bubble.bot .chat-content h3 {
+    margin-top: 14px;
+    margin-bottom: 8px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    color: var(--text-primary, #ffffff);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 4px;
+}
+
+.chat-bubble.bot .chat-content h3:first-child {
+    margin-top: 0;
+}
+
+
+/* Format Lists */
+
+.chat-bubble.bot .chat-content ul {
+    margin: 6px 0 12px 18px;
+    padding: 0;
+}
+
+.chat-bubble.bot .chat-content li {
+    margin-bottom: 4px;
+    color: var(--text-secondary, #d1d5db);
+}
+
+.chat-bubble.bot .chat-content p {
+    margin-bottom: 8px;
+}

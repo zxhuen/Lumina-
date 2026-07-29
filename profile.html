@@ -23,7 +23,8 @@
                 <ul class="nav-links">
                     <li><a href="index.html" class="nav-link">Home</a></li>
                     <li><a href="subjects.html" class="nav-link">Subjects</a></li>
-                    <li><a href="upload.html" class="nav-link">Upload</a></li>
+
+                    <li><a href="generate-flashcard.html" class="nav-link">Flashcards</a></li>
                     <li><a href="chat.html" class="nav-link">Lumina</a></li>
                     <li><a href="profile.html" class="nav-link active">Profile</a></li>
                 </ul>
@@ -59,7 +60,7 @@
             <hr style="border: 0; border-top: 1px solid var(--border-color); margin-bottom: var(--space-lg);">
 
             <!-- Subscription Section -->
-            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-tertiary); padding: var(--space-md) var(--space-lg); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-tertiary); padding: var(--space-md) var(--space-lg); border-radius: var(--radius-md); border: 1px solid var(--border-color); margin-bottom: var(--space-md);">
                 <div>
                     <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 4px;">
                         Current Plan
@@ -72,6 +73,26 @@
                 <button id="change-plan-btn" class="btn btn-secondary" style="font-size: 0.85rem; padding: 8px 16px;">
                     Change Plan
                 </button>
+            </div>
+
+            <!-- Usage Section -->
+            <div id="usage-section" style="background: var(--bg-tertiary); padding: var(--space-md) var(--space-lg); border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-xs);">
+                    <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-tertiary); font-weight: 600; letter-spacing: 0.05em;">
+                        Daily Usage
+                    </div>
+                    <span id="usage-percentage" style="font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); background: rgba(255, 255, 255, 0.08); padding: 2px 8px; border-radius: 12px;">0%</span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-sm);">
+                    <span id="usage-text" style="font-size: 1rem; font-weight: 600; color: var(--text-primary);">0 / 0 used today</span>
+                </div>
+
+                <!-- Usage Progress Bar Track -->
+                <div style="width: 100%; height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden;">
+                    <!-- Usage Progress Bar Fill -->
+                    <div id="usage-bar-fill" style="width: 0%; height: 100%; background: var(--accent-primary); border-radius: 4px; transition: width 0.4s ease-in-out;"></div>
+                </div>
             </div>
         </div>
 

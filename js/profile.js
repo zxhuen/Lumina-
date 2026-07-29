@@ -10,6 +10,11 @@ document.addEventListener('DOMContentLoaded', async() => {
     const changePlanBtn = document.getElementById('change-plan-btn');
     const logoutBtn = document.getElementById('logout-btn');
 
+    // Usage Elements
+    const usageText = document.getElementById('usage-text');
+    const usageBarFill = document.getElementById('usage-bar-fill');
+    const usagePercentage = document.getElementById('usage-percentage');
+
     try {
         // Fetch current user from your FastAPI /User/get-current-user endpoint
         const user = await getCurrentUser();
@@ -22,8 +27,14 @@ document.addEventListener('DOMContentLoaded', async() => {
         const email = user.email || 'No email associated';
         const avatarUrl = user.avatar_url;
 
-        // Extract plan name from nested premium_type object or fall back to 'FREE'
-        const planName = (user.premium_type && user.premium_type.name) || 'FREE';
+        // Extract plan name and limit using explicit checks (formatter-safe)
+        const premiumType = user.premium_type || {};
+        const planName = premiumType.name || 'FREE';
+        const dailyLimit = premiumType.daily_limit || 0;
+
+        // Extract usage today using explicit checks (formatter-safe)
+        const usage = user.usage || {};
+        const usedToday = usage.used_today || 0;
 
         nameEl.textContent = displayName;
         emailEl.textContent = email;
@@ -47,6 +58,25 @@ document.addEventListener('DOMContentLoaded', async() => {
             avatarPlaceholder.style.display = 'inline-block';
         }
 
+        // 3. Render Usage Progress Bar & Calculations
+        if (dailyLimit > 0) {
+            const percent = Math.min(100, Math.round((usedToday / dailyLimit) * 100));
+            if (usageText) usageText.textContent = `${usedToday} / ${dailyLimit} used today`;
+            if (usagePercentage) usagePercentage.textContent = `${percent}%`;
+
+            // Trigger width update for continuous animation effect
+            if (usageBarFill) {
+                requestAnimationFrame(() => {
+                    usageBarFill.style.width = `${percent}%`;
+                });
+            }
+        } else {
+            // Edge case: unlimited or 0 limit
+            if (usageText) usageText.textContent = `${usedToday} used today`;
+            if (usagePercentage) usagePercentage.textContent = '100%';
+            if (usageBarFill) usageBarFill.style.width = '100%';
+        }
+
     } catch (err) {
         console.error('Error rendering profile page:', err);
         if (typeof toast !== 'undefined') {
@@ -54,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async() => {
         }
     }
 
-    // 3. Change Plan Event Listener
+    // 4. Change Plan Event Listener
     if (changePlanBtn) {
         changePlanBtn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -62,7 +92,7 @@ document.addEventListener('DOMContentLoaded', async() => {
         });
     }
 
-    // 4. Logout Event Listener
+    // 5. Logout Event Listener
     if (logoutBtn) {
         logoutBtn.addEventListener('click', async(e) => {
             e.preventDefault();

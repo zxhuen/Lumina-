@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Sign In</title>
+    <title>Sign In - AI Learning Assistant</title>
     <!-- Supabase JS Client library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -23,15 +23,15 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            overflow: hidden;
+            padding: 24px 16px;
         }
         /* Ambient background glow */
         
         .glow-container {
-            position: absolute;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 70%);
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
@@ -44,26 +44,37 @@
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 400px;
-            padding: 48px 40px;
-            background: rgba(22, 22, 23, 0.8);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            max-width: 440px;
+            padding: 40px 32px;
+            background: rgba(22, 22, 23, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            box-shadow: 0 24px 48px rgba(0, 0, 0, 0.7);
             text-align: center;
         }
         
-        .apple-logo {
-            width: 38px;
-            height: 38px;
-            fill: #f5f5f7;
-            margin-bottom: 16px;
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+        }
+        
+        .brand-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #ffffff;
         }
         
         h1 {
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 600;
             letter-spacing: -0.015em;
             margin-bottom: 8px;
@@ -73,46 +84,142 @@
         p.subtitle {
             font-size: 14px;
             color: #86868b;
-            margin-bottom: 32px;
+            margin-bottom: 28px;
             font-weight: 400;
+            line-height: 1.4;
         }
         /* Google OAuth Button */
         
         .btn-google {
             width: 100%;
-            padding: 12px 16px;
+            padding: 14px 16px;
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            background: rgba(255, 255, 255, 0.05);
-            color: #f5f5f7;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #ffffff;
+            color: #000000;
             font-size: 15px;
-            font-weight: 500;
+            font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 12px;
             transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
         
         .btn-google:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.3);
-            transform: scale(1.01);
+            background: #f5f5f7;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(255, 255, 255, 0.1);
         }
         
         .btn-google:active {
-            transform: scale(0.98);
-            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(0);
+            background: #e5e5e7;
+        }
+        
+        .btn-google:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
         
         .google-icon {
             width: 18px;
             height: 18px;
         }
+        /* Notice / Constraints Accordion */
+        
+        .system-info {
+            margin-top: 28px;
+            text-align: left;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+        
+        .system-info summary {
+            padding: 12px 16px;
+            font-size: 12px;
+            font-weight: 600;
+            color: #a1a1a6;
+            cursor: pointer;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            list-style: none;
+        }
+        
+        .system-info summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .system-info summary::after {
+            content: "+";
+            font-size: 14px;
+            color: #86868b;
+        }
+        
+        .system-info[open] summary::after {
+            content: "−";
+        }
+        
+        .system-info summary:hover {
+            color: #f5f5f7;
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .info-content {
+            padding: 0 16px 16px 16px;
+            font-size: 12px;
+            color: #86868b;
+            line-height: 1.5;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .info-section {
+            margin-top: 12px;
+        }
+        
+        .info-section-title {
+            font-weight: 600;
+            color: #d2d2d7;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .info-list {
+            padding-left: 16px;
+            margin-top: 4px;
+        }
+        
+        .info-list li {
+            margin-bottom: 4px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 2px 6px;
+            font-size: 10px;
+            font-weight: 600;
+            border-radius: 4px;
+            background: rgba(41, 151, 255, 0.15);
+            color: #2997ff;
+            margin-left: 6px;
+        }
+        
+        .badge-warning {
+            background: rgba(255, 159, 10, 0.15);
+            color: #ff9f0a;
+        }
         
         .footer {
-            margin-top: 32px;
+            margin-top: 24px;
             font-size: 12px;
             color: #6e6e73;
         }
@@ -125,6 +232,29 @@
         .footer a:hover {
             text-decoration: underline;
         }
+        /* Status Toast */
+        
+        .status-msg {
+            margin-top: 16px;
+            font-size: 13px;
+            display: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        
+        .status-msg.error {
+            display: block;
+            background: rgba(255, 69, 58, 0.15);
+            color: #ff453a;
+            border: 1px solid rgba(255, 69, 58, 0.3);
+        }
+        
+        .status-msg.info {
+            display: block;
+            background: rgba(41, 151, 255, 0.15);
+            color: #2997ff;
+            border: 1px solid rgba(41, 151, 255, 0.3);
+        }
     </style>
 </head>
 
@@ -133,40 +263,90 @@
     <div class="glow-container"></div>
 
     <div class="login-card">
-        <!-- Apple Logo SVG -->
-        <svg class="apple-logo" viewBox="0 0 170 170" version="1.1">
-      <path d="M150.37 130.25c-2.45 5.66-5.35 10.87-8.71 15.66-4.58 6.53-8.33 11.05-11.22 13.56-4.48 4.12-9.28 6.23-14.42 6.35-3.69 0-8.14-1.05-13.32-3.18-5.19-2.12-9.97-3.17-14.34-3.17-4.58 0-9.49 1.05-14.75 3.17-5.26 2.13-9.5 3.24-12.74 3.35-4.34.13-9.13-1.9-14.36-6.08-3.81-3.14-7.84-7.98-12.09-14.52-7.51-11.41-13.25-23.82-17.22-37.23-3.97-13.41-5.95-26.06-5.95-37.95 0-14.9 3.63-27.42 10.89-37.56 7.26-10.14 16.59-15.32 27.99-15.54 4.58 0 9.79 1.16 15.63 3.48 5.84 2.32 9.7 3.59 11.58 3.81 2.39.12 6.42-1.22 12.09-4.02 5.67-2.8 10.83-4.13 15.48-3.98 12.31.62 22.37 5.25 30.19 13.88-10.9 6.53-16.2 15.75-15.9 27.67.31 9.47 4.09 17.38 11.34 23.73 7.25 6.35 15.82 10.02 25.72 11.01-2.39 7.07-5.55 14.18-9.48 21.33zM119.22 31.84c0-7.39 2.72-14.42 8.16-21.09 5.44-6.67 12.18-10.45 20.22-11.34.22 1.09.33 2.07.33 2.94 0 7.28-2.65 14.28-7.95 21.00-5.3 6.72-12.08 10.51-20.35 11.37-.11-.88-.41-1.84-.41-2.88z"/>
-    </svg>
+        <!-- Graduation Cap / Book SVG Icon -->
+        <div class="brand-icon">
+            <svg viewBox="0 0 24 24">
+                <path d="M12 3L1 9L12 15L21 10.09V17H23V9M5 13.18V17.18L12 21L19 17.18V13.18L12 17L5 13.18Z" />
+            </svg>
+        </div>
 
-        <h1>Sign in with google</h1>
-        <p class="subtitle">Use your Google account to continue</p>
+        <h1>Sign in to your Account</h1>
+        <p class="subtitle">Access your school modules, AI chat assistant, and instant flashcard generator.</p>
 
         <!-- Google Login Button -->
         <button id="google-login-btn" class="btn-google">
-      <svg class="google-icon" viewBox="0 0 24 24">
-        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-      </svg>
-      Continue with Google
-    </button>
+            <svg class="google-icon" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+            </svg>
+            <span id="btn-text">Continue with Google</span>
+        </button>
+
+        <div id="status-msg" class="status-msg"></div>
+
+        <!-- Collapsible System Capabilities & Limitations -->
+        <details class="system-info">
+            <summary>
+                <span>System Features & Rules</span>
+            </summary>
+            <div class="info-content">
+                <div class="info-section">
+                    <div class="info-section-title">
+                        Features <span class="badge">Included</span>
+                    </div>
+                    <ul class="info-list">
+                        <li><strong>AI Chat Assistant:</strong> Grounded in your school's learning modules.</li>
+                        <li><strong>Flashcard Generator:</strong> Create study cards from subjects or PDFs.</li>
+                        <li><strong>Subject Search:</strong> Browse and filter modules quickly.</li>
+                    </ul>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-section-title">
+                        Usage & Tokens <span class="badge">1 Word = 1 Token</span>
+                    </div>
+                    <p style="margin-top: 2px;">Tokens are deducted based on total input word count.</p>
+                </div>
+
+                <div class="info-section">
+                    <div class="info-section-title">
+                        Upload Constraints <span class="badge badge-warning">Important</span>
+                    </div>
+                    <ul class="info-list">
+                        <li>OCR supports <strong>text extraction from images</strong>.</li>
+                        <li>Visual contents (diagrams, charts, handwriting, or photos) are <strong>not analyzed</strong>.</li>
+                        <li>Images embedded inside PDFs are ignored (text-only extraction).</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
 
         <div class="footer">
-            Need help? <a href="#">Contact Support</a>
+            Need help signing in? <a href="#">Contact Support</a>
         </div>
     </div>
 
     <script>
-        // Initialize Supabase Client
         const SUPABASE_URL = 'https://zelmgdfyezdkcvylfkva.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InplbG1nZGZ5ZXpka2N2eWxma3ZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1NDU0NjAsImV4cCI6MjEwMDEyMTQ2MH0.dJyS4NM4eYaw2GJxkxgDAZg1McCHwj1U61ofQdy4OLk';
 
-        // 2. Access createClient safely from the global window object loaded via CDN
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // 3. Update references to use 'supabaseClient'
-        document.getElementById('google-login-btn').addEventListener('click', async() => {
+        const googleBtn = document.getElementById('google-login-btn');
+        const btnText = document.getElementById('btn-text');
+        const statusMsg = document.getElementById('status-msg');
+
+        function showStatus(text, type = 'info') {
+            statusMsg.textContent = text;
+            statusMsg.className = `status-msg ${type}`;
+        }
+
+        googleBtn.addEventListener('click', async() => {
+            googleBtn.disabled = true;
+            btnText.textContent = 'Redirecting...';
+
             const {
                 error
             } = await supabaseClient.auth.signInWithOAuth({
@@ -178,10 +358,12 @@
 
             if (error) {
                 console.error("OAuth trigger error:", error.message);
+                showStatus("Sign-in failed. Please try again.", "error");
+                googleBtn.disabled = false;
+                btnText.textContent = 'Continue with Google';
             }
         });
 
-        // 4. Check for active session after redirect
         window.addEventListener('DOMContentLoaded', async() => {
             const {
                 data: {
@@ -190,7 +372,8 @@
             } = await supabaseClient.auth.getSession();
 
             if (session) {
-                console.log("Access Token:", session.access_token);
+                showStatus("Authenticating with server...", "info");
+                googleBtn.disabled = true;
 
                 try {
                     const response = await fetch("http://127.0.0.1:8000/Login", {
@@ -200,20 +383,18 @@
                         },
                     });
 
-                    console.log("URL:", response.url);
-                    console.log("Status:", response.status);
-                    console.log("Response text:", await response.text());
-
                     if (response.ok) {
-                        console.log("Successfully authenticated with FastAPI backend!");
-                        // Make sure index.html is relative to your local development server root
                         window.location.href = "index.html";
                     } else {
                         console.error("FastAPI rejected session. Status:", response.status);
+                        showStatus("Authentication failed. Signing out...", "error");
                         await supabaseClient.auth.signOut();
+                        googleBtn.disabled = false;
                     }
                 } catch (err) {
                     console.error("Failed to authenticate with backend:", err);
+                    showStatus("Unable to reach backend server.", "error");
+                    googleBtn.disabled = false;
                 }
             }
         });

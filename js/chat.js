@@ -10,11 +10,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const attachBtn = document.getElementById('attach-btn');
     const imageInput = document.getElementById('chat-image-input');
     const previewContainer = document.getElementById('image-preview-container');
-    const imagePreview = document.getElementById('image-preview');
-    const filenameSpan = document.getElementById('image-filename');
-    const removeImageBtn = document.getElementById('remove-image-btn');
 
-    let selectedFile = null;
+    // Array to manage multiple uploaded files
+    let selectedFiles = [];
 
     if (!chatInput) return;
 
@@ -23,26 +21,65 @@ document.addEventListener('DOMContentLoaded', () => {
     // Trigger file picker
     attachBtn.addEventListener('click', () => imageInput.click());
 
-    // Handle image file selection
+    // Handle multi-image selection
     imageInput.addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            selectedFile = file;
-            imagePreview.src = URL.createObjectURL(file);
-            filenameSpan.textContent = file.name;
-            previewContainer.style.display = 'flex';
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+            selectedFiles = [...selectedFiles, ...files];
+            renderPreviews();
         }
     });
 
-    // Handle removing attached image
-    removeImageBtn.addEventListener('click', clearImageSelection);
+    function renderPreviews() {
+        previewContainer.innerHTML = '';
+        if (selectedFiles.length === 0) {
+            previewContainer.style.display = 'none';
+            imageInput.value = '';
+            return;
+        }
+
+        previewContainer.style.display = 'flex';
+
+        selectedFiles.forEach((file, index) => {
+            const badge = document.createElement('div');
+            badge.style.cssText = `
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                background: rgba(255, 255, 255, 0.08);
+                padding: 4px 8px;
+                border-radius: var(--radius-sm, 6px);
+                font-size: 0.8rem;
+            `;
+
+            const img = document.createElement('img');
+            img.src = URL.createObjectURL(file);
+            img.style.cssText = 'width: 32px; height: 32px; object-fit: cover; border-radius: 4px;';
+
+            const nameSpan = document.createElement('span');
+            nameSpan.style.cssText = 'color: var(--text-secondary); max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;';
+            nameSpan.textContent = file.name;
+
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '✕';
+            removeBtn.style.cssText = 'background: none; border: none; color: var(--text-muted); cursor: pointer; padding: 0 2px;';
+            removeBtn.addEventListener('click', () => removeFile(index));
+
+            badge.appendChild(img);
+            badge.appendChild(nameSpan);
+            badge.appendChild(removeBtn);
+            previewContainer.appendChild(badge);
+        });
+    }
+
+    function removeFile(index) {
+        selectedFiles.splice(index, 1);
+        renderPreviews();
+    }
 
     function clearImageSelection() {
-        selectedFile = null;
-        imageInput.value = '';
-        imagePreview.src = '';
-        filenameSpan.textContent = '';
-        previewContainer.style.display = 'none';
+        selectedFiles = [];
+        renderPreviews();
     }
 
     async function loadSubjects() {
@@ -69,8 +106,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // Pre-processing helper to fix clumped AI response strings into proper Markdown
+    // Pre-processing helper to fix clumped AI response strings into proper Markdown
+    function formatAiResponse(rawText) {
+        if (!rawText) return "";
+
+        let formatted = rawText
+            // Clean up lead-in "Answer:" prefix if present
+            .replace(/^Answer:\s*/i, '')
+            // Force headers like **Name** onto new lines
+            .replace(/(^|\s)(\*\*[^*]+\*\*)/g, '\n\n### $2\n')
+            // Force ANY inline asterisk followed by text/space to be on a fresh double-newline list item
+            .replace(/(:\s*)?\*\s+/g, '\n\n* ')
+            // Clean up excessive newlines
+            .replace(/\n{3,}/g, '\n\n')
+            .trim();
+
+        return formatted;
+    }
+
     // Configure marked to use highlight.js
-    // Marked.js (v5+) syntax extension setup for Highlight.js
     if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
         marked.use({
             breaks: true,
@@ -101,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function appendMessage(text, sender, contextLabel = null, chunkContext = null, imageFile = null) {
+    function appendMessage(text, sender, contextLabel = null, chunkContext = null, imageFiles = []) {
         const bubble = document.createElement('div');
         bubble.className = `chat-bubble ${sender}`;
 
@@ -115,26 +170,30 @@ document.addEventListener('DOMContentLoaded', () => {
             bubble.appendChild(badge);
         }
 
-        // Render attached image in user chat bubble if attached
-        if (imageFile) {
-            const img = document.createElement('img');
-            img.src = URL.createObjectURL(imageFile);
-            img.style.maxWidth = '100%';
-            img.style.maxHeight = '200px';
-            img.style.borderRadius = 'var(--radius-sm, 6px)';
-            img.style.marginBottom = '8px';
-            img.style.display = 'block';
-            bubble.appendChild(img);
+        // Render attached images gallery inside user message bubble
+        if (imageFiles && imageFiles.length > 0) {
+            const gallery = document.createElement('div');
+            gallery.style.cssText = 'display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;';
+
+            imageFiles.forEach(file => {
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(file);
+                img.style.cssText = 'max-width: 140px; max-height: 140px; border-radius: var(--radius-sm, 6px); object-fit: cover;';
+                gallery.appendChild(img);
+            });
+
+            bubble.appendChild(gallery);
         }
 
         const content = document.createElement('div');
         content.className = 'chat-content';
 
-        // Parse markdown for bot, plain text for user
         if (sender === 'bot') {
-            content.innerHTML = typeof marked !== 'undefined' ? marked.parse(text) : text;
+            // Pre-format the raw text to ensure proper Markdown line breaks
+            const formattedText = formatAiResponse(text);
 
-            // Add interactive Copy listeners to generated code buttons
+            content.innerHTML = typeof marked !== 'undefined' ? marked.parse(formattedText) : formattedText;
+
             content.querySelectorAll('.copy-code-btn').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const code = btn.nextElementSibling.querySelector('code').innerText;
@@ -208,23 +267,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleSend() {
         const query = chatInput.value.trim();
-        if (!query && !selectedFile) return;
+        if (!query && selectedFiles.length === 0) return;
 
         const selectedSubjectId = subjectSelect.value || null;
         const selectedSubjectLabel = subjectSelect.options[subjectSelect.selectedIndex].text;
-        const fileToSend = selectedFile;
+        const filesToSend = [...selectedFiles];
 
-        // Append user prompt and preview attached file
-        appendMessage(query, 'user', selectedSubjectLabel, null, fileToSend);
+        appendMessage(query, 'user', selectedSubjectLabel, null, filesToSend);
 
-        // Reset inputs immediately
         chatInput.value = '';
         clearImageSelection();
 
         appendTypingIndicator();
 
         try {
-            const res = await api.chatWithBot(query, selectedSubjectId, fileToSend);
+            const res = await api.chatWithBot(query, selectedSubjectId, filesToSend);
             removeTypingIndicator();
 
             appendMessage(
@@ -235,10 +292,17 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         } catch (err) {
             removeTypingIndicator();
+
+            // Render the exact HTTPException detail message in the chat stream
             appendMessage(
-                "Sorry, I'm having trouble connecting to the server. Please check your backend connection.",
+                `⚠️ ${err.message}`,
                 'bot'
             );
+
+            // Optional: Also display a toast popup if toast.js is loaded
+            if (typeof toast !== 'undefined') {
+                toast.show(err.message, "error");
+            }
         }
     }
 
