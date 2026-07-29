@@ -4,7 +4,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const messagesContainer = document.getElementById('chat-messages');
     const chatInput = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
-    const subjectSelect = document.getElementById('chat-subject-select');
+    const nativeSelect = document.getElementById('chat-subject-select');
+
+    // Custom Animated Dropdown Elements
+    const customDropdown = document.getElementById('custom-rag-dropdown');
+    const triggerBtn = document.getElementById('dropdown-trigger-btn');
+    const selectedLabel = document.getElementById('selected-subject-label');
+    const menuList = document.getElementById('dropdown-menu-list');
 
     // Image attachment elements
     const attachBtn = document.getElementById('attach-btn');
@@ -16,25 +22,154 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!chatInput) return;
 
+    // Create RAG Context Modal dynamically
+    const ragModal = createRagModal();
+
+    // Initialize custom dropdown events
+    initCustomDropdown();
+
+    // Load subject options from API
     loadSubjects();
 
     // Trigger file picker
-    attachBtn.addEventListener('click', () => imageInput.click());
+    if (attachBtn) {
+        attachBtn.addEventListener('click', () => {
+            imageInput.click();
+        });
+    }
 
     // Handle multi-image selection
-    imageInput.addEventListener('change', (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-            selectedFiles = [...selectedFiles, ...files];
-            renderPreviews();
+    if (imageInput) {
+        imageInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            if (files.length > 0) {
+                selectedFiles = [...selectedFiles, ...files];
+                renderPreviews();
+            }
+        });
+    }
+
+    /* ==========================================================================
+       RAG Modal Creation & Controls
+       ========================================================================== */
+
+    function createRagModal() {
+        const overlay = document.createElement('div');
+        overlay.className = 'rag-modal-overlay';
+        overlay.id = 'rag-context-modal';
+
+        const card = document.createElement('div');
+        card.className = 'rag-modal-card';
+
+        const header = document.createElement('div');
+        header.className = 'rag-modal-header';
+
+        const title = document.createElement('div');
+        title.className = 'rag-modal-title';
+        title.innerHTML = '🔍 Retrieved RAG Context';
+
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'rag-modal-close';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.addEventListener('click', () => {
+            overlay.classList.remove('active');
+        });
+
+        header.appendChild(title);
+        header.appendChild(closeBtn);
+
+        const body = document.createElement('div');
+        body.className = 'rag-modal-body';
+        body.id = 'rag-modal-content';
+
+        card.appendChild(header);
+        card.appendChild(body);
+        overlay.appendChild(card);
+
+        // Close when clicking overlay backdrop
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                overlay.classList.remove('active');
+            }
+        });
+
+        document.body.appendChild(overlay);
+        return overlay;
+    }
+
+    function openRagModal(contextText) {
+        const modalContent = document.getElementById('rag-modal-content');
+        if (modalContent) {
+            modalContent.innerText = contextText;
         }
-    });
+        if (ragModal) {
+            ragModal.classList.add('active');
+        }
+    }
+
+    /* ==========================================================================
+       Custom Animated Dropdown Logic
+       ========================================================================== */
+
+    function initCustomDropdown() {
+        if (!triggerBtn || !customDropdown) return;
+
+        triggerBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            customDropdown.classList.toggle('open');
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!customDropdown.contains(e.target)) {
+                customDropdown.classList.remove('open');
+            }
+        });
+    }
+
+    function renderCustomDropdownOptions() {
+        if (!menuList || !nativeSelect) return;
+        menuList.innerHTML = '';
+
+        Array.from(nativeSelect.options).forEach((opt) => {
+            const item = document.createElement('div');
+
+            if (opt.selected) {
+                item.className = 'dropdown-item selected';
+            } else {
+                item.className = 'dropdown-item';
+            }
+
+            item.textContent = opt.textContent;
+
+            item.addEventListener('click', () => {
+                nativeSelect.value = opt.value;
+                if (selectedLabel) {
+                    selectedLabel.textContent = opt.textContent;
+                }
+
+                menuList.querySelectorAll('.dropdown-item').forEach((i) => {
+                    i.classList.remove('selected');
+                });
+                item.classList.add('selected');
+
+                customDropdown.classList.remove('open');
+            });
+
+            menuList.appendChild(item);
+        });
+    }
+
+    /* ==========================================================================
+       File & Preview Handlers
+       ========================================================================== */
 
     function renderPreviews() {
         previewContainer.innerHTML = '';
         if (selectedFiles.length === 0) {
             previewContainer.style.display = 'none';
-            imageInput.value = '';
+            if (imageInput) {
+                imageInput.value = '';
+            }
             return;
         }
 
@@ -82,57 +217,79 @@ document.addEventListener('DOMContentLoaded', () => {
         renderPreviews();
     }
 
+    /* ==========================================================================
+       Subject Loader
+       ========================================================================== */
+
     async function loadSubjects() {
-        if (!subjectSelect) return;
+        if (!nativeSelect) return;
 
         try {
             const subjects = await api.listSubjects();
-            subjectSelect.innerHTML = '<option value="">🌐 All Subjects (Global RAG Search)</option>';
+            nativeSelect.innerHTML = '<option value="">pick a subject here</option>';
 
-            subjects.forEach(subject => {
+            subjects.forEach((subject) => {
                 const option = document.createElement('option');
                 option.value = subject.id;
                 option.textContent = subject.name;
-                subjectSelect.appendChild(option);
+                nativeSelect.appendChild(option);
             });
 
             const urlParams = new URLSearchParams(window.location.search);
             const targetSubjectId = urlParams.get('subject_id');
             if (targetSubjectId) {
-                subjectSelect.value = targetSubjectId;
+                nativeSelect.value = targetSubjectId;
             }
+
+            const selectedOpt = nativeSelect.options[nativeSelect.selectedIndex];
+            if (selectedOpt && selectedLabel) {
+                selectedLabel.textContent = selectedOpt.textContent;
+            }
+
+            renderCustomDropdownOptions();
         } catch (err) {
             console.error('Error loading subjects:', err);
         }
     }
 
-    // Pre-processing helper to fix clumped AI response strings into proper Markdown
-    // Pre-processing helper to fix clumped AI response strings into proper Markdown
+    /* ==========================================================================
+       Formatting & Rendering Helpers
+       ========================================================================== */
+
     function formatAiResponse(rawText) {
         if (!rawText) return "";
 
         let formatted = rawText
-            // Clean up lead-in "Answer:" prefix if present
             .replace(/^Answer:\s*/i, '')
-            // Force headers like **Name** onto new lines
             .replace(/(^|\s)(\*\*[^*]+\*\*)/g, '\n\n### $2\n')
-            // Force ANY inline asterisk followed by text/space to be on a fresh double-newline list item
             .replace(/(:\s*)?\*\s+/g, '\n\n* ')
-            // Clean up excessive newlines
             .replace(/\n{3,}/g, '\n\n')
             .trim();
 
         return formatted;
     }
 
-    // Configure marked to use highlight.js
+    function renderMarkdown(text) {
+        if (typeof marked !== 'undefined') {
+            return marked.parse(text);
+        }
+        return text;
+    }
+
     if (typeof marked !== 'undefined' && typeof hljs !== 'undefined') {
         marked.use({
             breaks: true,
             gfm: true,
             renderer: {
                 code(code, infostring) {
-                    const lang = (infostring || '').match(/\S*/)[0];
+                    let lang = '';
+                    if (infostring) {
+                        const match = infostring.match(/\S*/);
+                        if (match) {
+                            lang = match[0];
+                        }
+                    }
+
                     let highlighted = code;
 
                     if (lang && hljs.getLanguage(lang)) {
@@ -156,9 +313,21 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    /* ==========================================================================
+       Message Builder & Chat Handlers
+       ========================================================================== */
+
     function appendMessage(text, sender, contextLabel = null, chunkContext = null, imageFiles = []) {
         const bubble = document.createElement('div');
         bubble.className = `chat-bubble ${sender}`;
+
+        if (sender === 'bot') {
+            const avatar = document.createElement('img');
+            avatar.src = 'images/nari.jpg';
+            avatar.alt = 'Lumina AI';
+            avatar.className = 'bot-avatar';
+            bubble.appendChild(avatar);
+        }
 
         if (contextLabel && sender === 'user') {
             const badge = document.createElement('div');
@@ -170,12 +339,11 @@ document.addEventListener('DOMContentLoaded', () => {
             bubble.appendChild(badge);
         }
 
-        // Render attached images gallery inside user message bubble
         if (imageFiles && imageFiles.length > 0) {
             const gallery = document.createElement('div');
             gallery.style.cssText = 'display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;';
 
-            imageFiles.forEach(file => {
+            imageFiles.forEach((file) => {
                 const img = document.createElement('img');
                 img.src = URL.createObjectURL(file);
                 img.style.cssText = 'max-width: 140px; max-height: 140px; border-radius: var(--radius-sm, 6px); object-fit: cover;';
@@ -189,17 +357,17 @@ document.addEventListener('DOMContentLoaded', () => {
         content.className = 'chat-content';
 
         if (sender === 'bot') {
-            // Pre-format the raw text to ensure proper Markdown line breaks
             const formattedText = formatAiResponse(text);
+            content.innerHTML = renderMarkdown(formattedText);
 
-            content.innerHTML = typeof marked !== 'undefined' ? marked.parse(formattedText) : formattedText;
-
-            content.querySelectorAll('.copy-code-btn').forEach(btn => {
+            content.querySelectorAll('.copy-code-btn').forEach((btn) => {
                 btn.addEventListener('click', () => {
                     const code = btn.nextElementSibling.querySelector('code').innerText;
                     navigator.clipboard.writeText(code).then(() => {
                         btn.innerText = 'Copied!';
-                        setTimeout(() => btn.innerText = 'Copy', 2000);
+                        setTimeout(() => {
+                            btn.innerText = 'Copy';
+                        }, 2000);
                     });
                 });
             });
@@ -209,41 +377,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
         bubble.appendChild(content);
 
-        // Render RAG chunk context standard collapse if available
+        // ATTACH RAG CONTEXT BUTTON AT THE VERY BOTTOM OF THE CHAT BUBBLE
         if (sender === 'bot' && chunkContext) {
-            const contextContainer = document.createElement('details');
-            contextContainer.style.marginTop = '10px';
-            contextContainer.style.paddingTop = '8px';
-            contextContainer.style.borderTop = '1px solid rgba(255, 255, 255, 0.15)';
-            contextContainer.style.fontSize = '0.82rem';
-
-            const summary = document.createElement('summary');
-            summary.style.cursor = 'pointer';
-            summary.style.opacity = '0.85';
-            summary.style.fontWeight = '500';
-            summary.innerText = '🔍 View Retrieved RAG Context';
-
-            const contextBody = document.createElement('div');
-            contextBody.style.marginTop = '8px';
-            contextBody.style.padding = '8px 12px';
-            contextBody.style.borderRadius = 'var(--radius-sm, 6px)';
-            contextBody.style.backgroundColor = 'rgba(0, 0, 0, 0.2)';
-            contextBody.style.whiteSpace = 'pre-wrap';
-            contextBody.style.fontFamily = 'monospace';
-            contextBody.style.maxHeight = '200px';
-            contextBody.style.overflowY = 'auto';
-
+            let formattedContext = '';
             if (Array.isArray(chunkContext)) {
-                contextBody.innerText = chunkContext.map((c, i) => `[Chunk ${i + 1}]:\n${c}`).join('\n\n');
+                formattedContext = chunkContext.map((c, i) => `[Chunk ${i + 1}]:\n${c}`).join('\n\n');
             } else if (typeof chunkContext === 'object') {
-                contextBody.innerText = JSON.stringify(chunkContext, null, 2);
+                formattedContext = JSON.stringify(chunkContext, null, 2);
             } else {
-                contextBody.innerText = chunkContext;
+                formattedContext = String(chunkContext);
             }
 
-            contextContainer.appendChild(summary);
-            contextContainer.appendChild(contextBody);
-            bubble.appendChild(contextContainer);
+            // Outer wrapper forcing full-width placement below avatar & content flex alignment
+            const contextFooter = document.createElement('div');
+            contextFooter.style.cssText = `
+                width: 100%;
+                margin-top: 12px;
+                padding-top: 8px;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                display: flex;
+                justify-content: flex-start;
+            `;
+
+            const modalTriggerBtn = document.createElement('button');
+            modalTriggerBtn.type = 'button';
+            modalTriggerBtn.style.cssText = `
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 14px;
+                font-size: 0.78rem;
+                font-weight: 500;
+                color: var(--accent-primary, #646cff);
+                background: rgba(100, 108, 255, 0.12);
+                border: 1px solid rgba(100, 108, 255, 0.25);
+                border-radius: 20px;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            `;
+            modalTriggerBtn.innerText = '🔍 View Retrieved RAG Context';
+
+            modalTriggerBtn.addEventListener('click', () => {
+                openRagModal(formattedContext);
+            });
+
+            contextFooter.appendChild(modalTriggerBtn);
+            bubble.appendChild(contextFooter);
         }
 
         messagesContainer.appendChild(bubble);
@@ -255,22 +434,37 @@ document.addEventListener('DOMContentLoaded', () => {
         const bubble = document.createElement('div');
         bubble.className = 'chat-bubble bot';
         bubble.id = 'typing-indicator';
-        bubble.innerHTML = `<span class="dot-1">•</span><span class="dot-2">•</span><span class="dot-3">•</span>`;
+        bubble.innerHTML = `
+        <img src="images/nari.jpg" alt="Lumina AI" class="bot-avatar">
+        <div class="typing-dots">
+            <span>•</span><span>•</span><span>•</span>
+        </div>
+        `;
         messagesContainer.appendChild(bubble);
         messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
 
     function removeTypingIndicator() {
         const indicator = document.getElementById('typing-indicator');
-        if (indicator) indicator.remove();
+        if (indicator) {
+            indicator.remove();
+        }
     }
 
     async function handleSend() {
         const query = chatInput.value.trim();
         if (!query && selectedFiles.length === 0) return;
 
-        const selectedSubjectId = subjectSelect.value || null;
-        const selectedSubjectLabel = subjectSelect.options[subjectSelect.selectedIndex].text;
+        let selectedSubjectId = null;
+        if (nativeSelect && nativeSelect.value) {
+            selectedSubjectId = nativeSelect.value;
+        }
+
+        let selectedSubjectLabel = "Global Search";
+        if (nativeSelect && nativeSelect.selectedIndex >= 0 && nativeSelect.options[nativeSelect.selectedIndex]) {
+            selectedSubjectLabel = nativeSelect.options[nativeSelect.selectedIndex].text;
+        }
+
         const filesToSend = [...selectedFiles];
 
         appendMessage(query, 'user', selectedSubjectLabel, null, filesToSend);
@@ -284,30 +478,45 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await api.chatWithBot(query, selectedSubjectId, filesToSend);
             removeTypingIndicator();
 
+            let botAnswer = "No response received.";
+            if (res && res.answer) {
+                botAnswer = res.answer;
+            }
+
+            let chunkContext = null;
+            if (res && res.chunk_context) {
+                chunkContext = res.chunk_context;
+            }
+
             appendMessage(
-                res.answer || "No response received.",
+                botAnswer,
                 'bot',
                 null,
-                res.chunk_context || null
+                chunkContext
             );
         } catch (err) {
             removeTypingIndicator();
 
-            // Render the exact HTTPException detail message in the chat stream
             appendMessage(
                 `⚠️ ${err.message}`,
                 'bot'
             );
 
-            // Optional: Also display a toast popup if toast.js is loaded
             if (typeof toast !== 'undefined') {
                 toast.show(err.message, "error");
             }
         }
     }
 
-    sendBtn.addEventListener('click', handleSend);
-    chatInput.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter') handleSend();
-    });
+    if (sendBtn) {
+        sendBtn.addEventListener('click', handleSend);
+    }
+
+    if (chatInput) {
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleSend();
+            }
+        });
+    }
 });

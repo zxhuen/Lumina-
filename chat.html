@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/components.css">
     <link rel="stylesheet" href="css/animations.css">
+
     <!-- Code Syntax Highlighting CSS Theme (Atom One Dark) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
 
@@ -17,67 +18,99 @@
 
     <!-- Highlight.js for Code Highlighting -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-    <!-- Optional: Add specific language support if needed -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/bash.min.js"></script>
 </head>
 
 <body>
+    <div class="ambient-glow"></div>
+
     <header class="header">
         <div class="nav-container">
             <a href="index.html" class="brand">
-                <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg> Lumina
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                <span>Lumina</span>
             </a>
             <nav>
                 <ul class="nav-links">
                     <li><a href="index.html" class="nav-link">Home</a></li>
                     <li><a href="subjects.html" class="nav-link">Subjects</a></li>
-
                     <li><a href="generate-flashcard.html" class="nav-link">Flashcards</a></li>
                     <li><a href="chat.html" class="nav-link active">Lumina</a></li>
                     <li><a href="profile.html" class="nav-link">Profile</a></li>
                 </ul>
             </nav>
             <div class="nav-controls">
-                <button id="theme-toggle" class="icon-btn" onclick="themeManager.toggle()"></button>
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme" onclick="themeManager.toggle()"></button>
             </div>
         </div>
     </header>
 
-    <main style="max-width: 900px; margin: 0 auto; padding: var(--space-md);">
-        <div class="chat-window">
-            <!-- Header RAG Selector -->
-            <div style="padding: var(--space-xs) var(--space-md); border-bottom: 1px solid var(--border-color); background-color: var(--bg-tertiary); display: flex; align-items: center; justify-content: space-between;">
-                <div style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 500;">
-                    RAG Context:
+    <main class="chat-main-container">
+        <div class="chat-window-card">
+
+            <!-- Context Header Bar -->
+            <!-- Context Header Bar with Custom Animated Dropdown -->
+            <div class="chat-header-bar">
+                <div class="rag-indicator">
+                    <span class="pulse-status"></span>
+                    <span>RAG Knowledge Context:</span>
                 </div>
-                <select id="chat-subject-select" class="form-select" style="width: auto; padding: 6px 14px; font-size: 0.85rem; border-radius: var(--radius-full);">
-                    <option value="">🌐 All Subjects (Global RAG Search)</option>
-                </select>
+
+                <!-- Hidden native select so existing JS logic remains intact -->
+                <select id="chat-subject-select" class="rag-select" style="display: none;">
+                    <option value="">pick a subject here</option>
+                 </select>
+
+                <!-- Custom Animated Dropdown UI -->
+                <div id="custom-rag-dropdown" class="custom-dropdown">
+                    <button id="dropdown-trigger-btn" type="button" class="dropdown-trigger">
+            <span id="selected-subject-label" class="dropdown-label">pick a subject here</span>
+            <svg class="dropdown-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+        </button>
+
+                    <div id="dropdown-menu-list" class="dropdown-menu">
+                        <!-- Dynamic subject items will render here -->
+                    </div>
+                </div>
             </div>
 
-            <!-- Messages Area -->
+            <!-- Messages Stream Area -->
             <div id="chat-messages" class="chat-messages">
                 <div class="chat-bubble bot">
-                    Hi there! I'm Lumina, Zhike Esguerra's learning assistant. Ask me anything or attach an image to get started!
+                    <img src="images/nari.png" alt="Lumina AI" class="bot-avatar">
+                    <div class="chat-content">
+                        Hi there! I'm Nari, Zhike Esguerra's learning assistant. Ask me anything or attach an image to get started!
+                    </div>
                 </div>
             </div>
 
-            <!-- Multi-Image Preview Container -->
-            <div id="image-preview-container" style="display: none; padding: 8px var(--space-md); background: var(--bg-tertiary); border-top: 1px solid var(--border-color); flex-wrap: wrap; gap: 8px; align-items: center;">
-                <!-- Dynamic thumbnail badges render here -->
+            <!-- Multi-Image Attachment Preview -->
+            <div id="image-preview-container" class="preview-bar" style="display: none;"></div>
+
+            <!-- Enhanced Input Bar -->
+            <div class="chat-input-wrapper">
+                <input type="file" id="chat-image-input" accept="image/*" multiple style="display: none;">
+
+                <button id="attach-btn" type="button" class="input-action-btn" title="Attach Images">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21.44 11.05l-9.19 9.19a6 6 0 01-8.49-8.49l9.19-9.19a4 4 0 015.66 5.66l-9.2 9.19a2 2 0 01-2.83-2.83l8.49-8.48"/>
+                    </svg>
+                </button>
+
+                <input type="text" id="chat-input" class="chat-input-field" placeholder="Ask Lumina anything about your courses..." autocomplete="off">
+
+                <button id="send-btn" class="send-action-btn" title="Send Message">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
             </div>
 
-            <!-- Input Bar -->
-            <div class="chat-input-area" style="display: flex; gap: 8px; padding: var(--space-xs) var(--space-md); align-items: center;">
-                <input type="file" id="chat-image-input" accept="image/*" multiple style="display: none;">
-                <button id="attach-btn" type="button" class="btn" style="padding: 10px; border-radius: 50%;" title="Attach Images">
-                    📎
-                </button>
-                <input type="text" id="chat-input" class="form-input" placeholder="Ask a question about your subject..." style="border-radius: var(--radius-full); flex: 1;">
-                <button id="send-btn" class="btn btn-primary" style="padding: 12px 20px; border-radius: var(--radius-full);">
-                    Send
-                </button>
-            </div>
         </div>
     </main>
 

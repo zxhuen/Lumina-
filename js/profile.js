@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', async() => {
     if (changePlanBtn) {
         changePlanBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            toast.show('Subscription upgrade flow coming soon!', 'info');
+            onclick = window.location.href = 'pricing.html';
         });
     }
 
