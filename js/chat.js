@@ -323,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (sender === 'bot') {
             const avatar = document.createElement('img');
-            avatar.src = 'images/nari.jpg';
+            avatar.src = 'images/nari.png';
             avatar.alt = 'Lumina AI';
             avatar.className = 'bot-avatar';
             bubble.appendChild(avatar);
