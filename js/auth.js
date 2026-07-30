@@ -11,7 +11,7 @@ export async function getCurrentUser() {
 
     if (!session) {
         console.log("3. No session");
-        window.location.href = "/project/login.html";
+        window.location.href = "login.html";
         return null;
     }
 

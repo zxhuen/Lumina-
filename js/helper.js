@@ -6,7 +6,7 @@ export async function authFetch(url, options = {}) {
     } = await supabaseClient.auth.getSession();
 
     if (!session) {
-        window.location.href = "/project/login.html";
+        window.location.href = "login.html";
         return;
     }
 

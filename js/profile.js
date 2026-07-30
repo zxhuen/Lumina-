@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async() => {
         logoutBtn.addEventListener('click', async(e) => {
             e.preventDefault();
             await supabaseClient.auth.signOut();
-            window.location.href = '/project/login.html';
+            window.location.href = 'login.html';
         });
     }
 });
