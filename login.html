@@ -218,6 +218,37 @@
             color: #ff9f0a;
         }
         
+        @media (max-width: 640px) {
+            .glow-container {
+                width: 380px;
+                height: 380px;
+            }
+            .login-card {
+                padding: 28px 20px;
+                max-width: 100%;
+            }
+            .brand-icon {
+                width: 40px;
+                height: 40px;
+            }
+            h1 {
+                font-size: 22px;
+            }
+            p.subtitle {
+                font-size: 0.95rem;
+            }
+            .btn-google {
+                width: 100%;
+                padding: 14px 18px;
+            }
+            .system-info summary {
+                padding: 12px 14px;
+            }
+            .info-content {
+                padding: 0 14px 16px;
+            }
+        }
+        
         .footer {
             margin-top: 24px;
             font-size: 12px;
@@ -315,9 +346,9 @@
                         Upload Constraints <span class="badge badge-warning">Important</span>
                     </div>
                     <ul class="info-list">
-                        <li>OCR supports <strong>text extraction from images</strong>.</li>
-                        <li>Visual contents (diagrams, charts, handwriting, or photos) are <strong>not analyzed</strong>.</li>
-                        <li>Images embedded inside PDFs are ignored (text-only extraction).</li>
+                        <li><strong>Photo Uploads Unavailable:</strong> Direct image uploads in chat are currently disabled due to API budget constraints.</li>
+                        <li><strong>Scanned PDFs Unsupported:</strong> Scanned documents and image-only PDFs cannot be processed.</li>
+                        <li><strong>Text-Only Extraction:</strong> Images and diagrams inside uploaded PDFs are automatically ignored.</li>
                     </ul>
                 </div>
             </div>
@@ -376,7 +407,7 @@
                 googleBtn.disabled = true;
 
                 try {
-                    const response = await fetch(" https://fastapi-rag-engine-83zg.onrender.com/Login", {
+                    const response = await fetch("https://fastapi-rag-engine-83zg.onrender.com/Login", {
                         method: "GET",
                         headers: {
                             Authorization: `Bearer ${session.access_token}`,

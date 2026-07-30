@@ -6,15 +6,24 @@ export async function authFetch(url, options = {}) {
     } = await supabaseClient.auth.getSession();
 
     if (!session) {
+        await supabaseClient.auth.signOut();
         window.location.href = "login.html";
-        return;
+        return null;
     }
 
-    return fetch(url, {
+    const response = await fetch(url, {
         ...options,
         headers: {
             ...options.headers,
             Authorization: `Bearer ${session.access_token}`,
         },
     });
+
+    if (response.status === 401) {
+        await supabaseClient.auth.signOut();
+        window.location.href = "login.html";
+        return null;
+    }
+
+    return response;
 }

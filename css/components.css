@@ -239,3 +239,40 @@
     gap: var(--space-xs);
     align-items: center;
 }
+
+@media (max-width: 720px) {
+    .form-group {
+        width: 100%;
+    }
+    .drop-zone {
+        padding: var(--space-lg);
+    }
+    .chat-window {
+        height: auto;
+        min-height: 420px;
+    }
+    .chat-input-area {
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+    }
+    .chat-input-area input,
+    .chat-input-area textarea,
+    .chat-input-area select {
+        flex: 1 1 100%;
+        min-width: 0;
+    }
+    .chat-bubble {
+        max-width: 100%;
+    }
+    #toast-container {
+        left: 16px;
+        right: 16px;
+        bottom: 16px;
+        position: fixed;
+    }
+    .toast {
+        width: auto;
+        min-width: unset;
+        max-width: calc(100vw - 32px);
+    }
+}
