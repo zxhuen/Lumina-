@@ -17,7 +17,7 @@ export async function getCurrentUser() {
 
     console.log("4. Calling backend");
 
-    const response = await fetch("https://fastapi-rag-engine-jnup.onrender.com/User/get-current-user", {
+    const response = await fetch(" https://fastapi-rag-engine-83zg.onrender.com/User/get-current-user", {
         headers: {
             Authorization: `Bearer ${session.access_token}`,
         },

@@ -1,7 +1,7 @@
 import { authFetch } from "./helper.js";
 
 class APIClient {
-    constructor(baseURL = "https://fastapi-rag-engine-jnup.onrender.com") {
+    constructor(baseURL = " https://fastapi-rag-engine-83zg.onrender.com") {
         this.baseURL = baseURL;
     }
 
